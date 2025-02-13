@@ -1,5 +1,5 @@
 # Use a stable Node.js version (18 instead of 20)
-FROM node:18-alpine AS builder
+FROM node:14.21.0-alpine
 
 WORKDIR /app
 
