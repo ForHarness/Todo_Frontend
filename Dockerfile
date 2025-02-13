@@ -1,5 +1,5 @@
 # Use a Node.js image that contains both build tools and runtime environment
-FROM node:14.21.0-alpine
+FROM node:20-alpine
 
 # Set the working directory
 WORKDIR /app
