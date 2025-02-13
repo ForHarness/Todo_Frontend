@@ -1,20 +1,28 @@
 # Use a Node.js image that contains both build tools and runtime environment
-FROM node:20-alpine
+FROM node:20-alpine AS builder
 
 # Set the working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json (if present)
+# Copy package.json and package-lock.json first for better caching
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install
+RUN npm install --production
 
 # Copy the rest of the application code
 COPY . .
 
 # Build the application
 RUN npm run build
+
+# Create a lightweight production image
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copy only the build folder and necessary files from builder stage
+COPY --from=builder /app/build /app/build
 
 # Install serve globally
 RUN npm install -g serve
