@@ -1,5 +1,5 @@
-# Use a stable Node.js version (18 instead of 20)
-FROM node:14.21.0-alpine
+# Use a stable Node.js version for building
+FROM node:14.21.0-alpine AS builder
 
 WORKDIR /app
 
@@ -15,12 +15,12 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Create a lightweight production image
-FROM node:18-alpine
+# Use a lightweight Node.js image for serving the built app
+FROM node:14.21.0-alpine
 
 WORKDIR /app
 
-# Copy only the build folder from builder stage
+# Copy only the build folder from the builder stage
 COPY --from=builder /app/build /app/build
 
 # Install serve globally
