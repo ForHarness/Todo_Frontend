@@ -1,5 +1,5 @@
-# Use a Node.js image that contains both build tools and runtime environment
-FROM node:20-alpine AS builder
+# Use a stable Node.js version (18 instead of 20)
+FROM node:18-alpine AS builder
 
 WORKDIR /app
 
@@ -16,7 +16,7 @@ COPY . .
 RUN npm run build
 
 # Create a lightweight production image
-FROM node:20-alpine
+FROM node:18-alpine
 
 WORKDIR /app
 
