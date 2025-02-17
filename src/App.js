@@ -18,25 +18,29 @@ function App() {
         setTodos(response.data);
       } else {
         console.error('Invalid response format:', response.data);
-        setTodos([]); // Set todos to an empty array
+        setTodos([]);
       }
     } catch (error) {
       console.error('Error fetching todos:', error.message);
-      setTodos([]); // Set todos to an empty array
+      setTodos([]);
     }
   };
 
   const handleAddTodo = async () => {
+    if (!title.trim()) {
+      alert('Title is required');
+      return;
+    }
+
     try {
       const response = await axios.post(`${process.env.REACT_APP_API_URL}/todos`, {
         title,
         description,
-        completed: false
+        completed: false,
       });
 
       if (response.status >= 200 && response.status < 300) {
-        console.log('Todo created:', response.data);
-        setTodos([...todos, response.data]);
+        setTodos([...todos, response.data]); // Assuming API returns the full todo object
         setTitle('');
         setDescription('');
       } else {
@@ -50,9 +54,25 @@ function App() {
   const handleDeleteTodo = async (id) => {
     try {
       await axios.delete(`${process.env.REACT_APP_API_URL}/todos/${id}`);
-      setTodos(todos.filter(todo => todo.id !== id));
+      setTodos(todos.filter((todo) => todo.id !== id));
     } catch (error) {
       console.error('Error deleting todo:', error.message);
+    }
+  };
+
+  const handleToggleComplete = async (id, completed) => {
+    try {
+      const response = await axios.put(`${process.env.REACT_APP_API_URL}/todos/${id}`, {
+        completed: !completed, // Toggle completion status
+      });
+
+      if (response.status >= 200 && response.status < 300) {
+        setTodos(todos.map((todo) =>
+          todo.id === id ? { ...todo, completed: !completed } : todo
+        ));
+      }
+    } catch (error) {
+      console.error('Error updating todo:', error.message);
     }
   };
 
@@ -64,21 +84,29 @@ function App() {
           type="text"
           placeholder="Title"
           value={title}
-          onChange={e => setTitle(e.target.value)}
+          onChange={(e) => setTitle(e.target.value)}
         />
         <input
           type="text"
           placeholder="Description"
           value={description}
-          onChange={e => setDescription(e.target.value)}
+          onChange={(e) => setDescription(e.target.value)}
         />
         <button onClick={handleAddTodo}>Add Todo</button>
       </div>
       <ul>
-        {todos.map(todo => (
-          <li key={todo.id}>
+        {todos.map((todo) => (
+          <li key={todo.id} className={todo.completed ? 'completed' : ''}>
             <h3>{todo.title}</h3>
             <p>{todo.description}</p>
+            <label>
+              <input
+                type="checkbox"
+                checked={todo.completed}
+                onChange={() => handleToggleComplete(todo.id, todo.completed)}
+              />
+              Completed
+            </label>
             <button onClick={() => handleDeleteTodo(todo.id)}>Delete</button>
           </li>
         ))}
