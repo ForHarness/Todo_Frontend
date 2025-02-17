@@ -7,6 +7,6 @@ spec:
     app: react-app
   ports:
     - protocol: TCP
-      port: 80  # External port
+      port: 3000  # External port
       targetPort: 3000  # Matches containerPort in Deployment
   type: LoadBalancer
