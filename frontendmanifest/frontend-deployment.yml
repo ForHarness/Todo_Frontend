@@ -23,6 +23,4 @@ spec:
             limits:
               memory: "256Mi"
               cpu: "500m"
-          env:
-            - name: NODE_ENV
-              value: "production"
+         
